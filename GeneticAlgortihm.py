@@ -5,13 +5,11 @@ import numpy as np
 
 # INPUTS
 file_name = "items"  # write the input file's path if the main file and it are not in the same directory
-
-# carrier - limitation for weight
-carrier_limit = 15.0  # kg
+carrier_limit = 15.0  # carrier - limitation for weight
 
 # genetic algorithm parameters
-population_size = 50
-generation_size = 10
+population_size = 10
+generation_size = 100
 mutation_rate = 0.1
 crossover_rate = 0.8
 
@@ -26,14 +24,12 @@ with open(file_name, "r") as f:
         new_item = items.Item(int(id), float(w), float(v))
         item_list.append(new_item)
 
-
 # create a random solution without checking whether it is valid or not.
 def create_random_solution(i_list):
     solution = []
     for i in range(0, len(i_list)):
         solution.append(random.randint(0, 1))
     return solution
-
 
 # check the solution if it is valid according to the constraint.
 def valid_solution(i_list, s_list, limit):
@@ -53,7 +49,6 @@ def calculate_value(i_list, s_list):
             total_value += i_list[i].value
     return total_value
 
-
 # check if two generated solutions are same.
 # for example --> 0 1 0 1 1 0 1 1 = 0 1 0 1 1 0 1 1
 def check_duplicate_solutions(s_1, s_2):  # two lists should be in same length
@@ -61,7 +56,6 @@ def check_duplicate_solutions(s_1, s_2):  # two lists should be in same length
         if s_1[i] != s_2[i]:
             return False
     return True
-
 
 # create initial population using item list, population size and w_limit = weight limit to carry
 def initial_population(pop_size, i_list, w_limit):
@@ -86,7 +80,6 @@ def initial_population(pop_size, i_list, w_limit):
                     i += 1
     return population
 
-
 # pick random two solutions from the population and compare their value, select the better as winner.
 def tournament_selection(pop):
     ticket_1 = random.randint(0, len(pop) - 1)
@@ -97,7 +90,6 @@ def tournament_selection(pop):
         winner = pop[ticket_2]
 
     return winner
-
 
 # one point crossover operation
 def crossover(p_1, p_2):
@@ -110,7 +102,6 @@ def crossover(p_1, p_2):
     else:
         return crossover(p_1, p_2)
 
-
 # one point mutation operation
 def mutation(chromosome):
     temp = chromosome
@@ -121,7 +112,6 @@ def mutation(chromosome):
         return temp
     else:
         return mutation(chromosome)
-
 
 def create_generation(pop, crossover_rate, mut_rate):
     new_gen = []
@@ -140,7 +130,6 @@ def create_generation(pop, crossover_rate, mut_rate):
         new_gen.append(child)
     return new_gen
 
-
 def best_solution(generation, i_list):
     best = 0
     for i in range(0, len(generation)):
@@ -149,9 +138,7 @@ def best_solution(generation, i_list):
             best = temp
     return best
 
-
 value_list = []  # just for plot of the value of a solution from each generation
-
 
 # main genetic algorithm flow function
 # create an initial population
@@ -170,7 +157,6 @@ def genetic_algorithm(c_limit, p_size, gen_size, mutation_rate, i_list):
         sum_of_values += current_value
     return pop, value_list
 
-
 # latest population after genetic algorithm run
 latest_pop, v_list = genetic_algorithm(c_limit=carrier_limit,
                                        p_size=population_size,
@@ -183,13 +169,8 @@ sum_of_values = sum(v_list)
 mean_all_value= sum_of_values/generation_size
 best_solution_value = best_solution(latest_pop, item_list)
 
-print("\n")
-print("En iyi çözüm değeri:", best_solution_value)
-print("Toplam değerler:", sum_of_values)
-print("Değerlerin ortalaması:",mean_all_value)
-print("Standart sapma:", std_deviation)
-
 info_text = f"\nEn iyi çözüm değeri: {best_solution_value}\nToplam değerler: {sum_of_values}\nDeğerlerin ortalaması: {mean_all_value}\nStandart sapma: {std_deviation}"
+print(info_text)
 fig, ax = plt.subplots()
 ax.plot(v_list)
 ax.set(xlabel='Nesiller', ylabel='Değerler', title="Nesiller boyunca çözümlerin değerleri")
